@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grille de notation – Police nationale (accès sécurisé)</title>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--ink:#142038;--muted:#5b6882;--line:#dde3ee;--navy:#0b2a5b;--navy2:#163c7d;--red:#c8102e;--ok:#1d8a4e;--warn:#d98200}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+header.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:16px 20px 18px;border-bottom:5px solid var(--red)}
+header.top .in{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+header.top h1{margin:0 0 2px;font-size:1.35rem}
+header.top p{margin:0;opacity:.85;font-size:.88rem}
+main{max-width:1100px;margin:auto;padding:16px 16px 60px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(10,30,70,.04);scroll-margin-top:130px}
+.card h2{margin:0 0 10px;font-size:1.06rem;display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.badge{font-size:.85rem;font-weight:700;background:var(--navy);color:#fff;border-radius:20px;padding:3px 12px;white-space:nowrap}
+.badge.low{background:var(--red)}.badge.good{background:var(--ok)}.badge.off{background:#8a96ad}
+.coef{font-weight:500;color:var(--muted);font-size:.78rem}
+label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:3px;font-weight:600}
+input[type=text],input[type=date],input[type=number],input[type=search],input[type=password],textarea,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+input:disabled,textarea:disabled,select:disabled{background:#f0f2f7;color:#7b869c;cursor:not-allowed}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--navy2);outline-offset:0;border-color:var(--navy2)}
+textarea{min-height:56px;resize:vertical}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+button{font:inherit;cursor:pointer;border:1px solid var(--navy);background:var(--navy);color:#fff;padding:8px 14px;border-radius:8px;font-weight:600;font-size:.88rem}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.sec{background:#fff;color:var(--navy)}
+button.danger{background:#fff;color:var(--red);border-color:var(--red)}
+button.del{background:var(--red);border-color:var(--red)}
+button.small{padding:4px 10px;font-size:.78rem}
+button.hb{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.45);color:#fff}
+button.bigbtn{padding:10px 18px;font-size:.95rem;background:var(--red);border-color:var(--red)}
+button:hover:not(:disabled){filter:brightness(1.08)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.note{font-size:.78rem;color:var(--muted);margin:8px 0 0}
+/* gate */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.gbox{background:#fff;border-radius:16px;padding:26px 26px 22px;max-width:410px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);border-top:6px solid var(--red)}
+.gbox h1{margin:4px 0 2px;font-size:1.3rem}
+.gbox .sub{color:var(--muted);font-size:.86rem;margin-bottom:12px}
+.gbox label{margin-top:10px}
+.err{color:var(--red);font-size:.85rem;margin-top:10px;min-height:1.2em}
+.okmsg{color:var(--ok)}
+.pw{position:relative}
+.pw button{position:absolute;right:4px;top:4px;padding:2px 8px}
+.gload{color:#fff;font-weight:600}
+/* userbar */
+.me{display:flex;gap:10px;align-items:center;font-size:.85rem;line-height:1.35}
+.av{width:40px;height:40px;border-radius:50%;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;border:3px solid #fff;flex:none}
+.gb{display:inline-block;padding:1px 9px;border-radius:10px;color:#fff;font-size:.72rem;font-weight:700;margin-right:4px;white-space:nowrap}
+.gb.adm{background:var(--red)}
+.ubar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+/* stats / list */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-size:1.7rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:.78rem;color:var(--muted);font-weight:600}
+.toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:640px){.toolbar{grid-template-columns:1fr}}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+td.n,th.n{text-align:left}
+tbody tr[data-open]{cursor:pointer}
+tbody tr[data-open]:hover td{background:#f0f4fb}
+td.n b{color:var(--navy2)}
+td.low{color:var(--red);font-weight:700}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;color:#fff;font-size:.74rem;font-weight:700}
+.mini{display:inline-block;width:46px;height:6px;border-radius:4px;background:#e4e9f3;vertical-align:middle;margin-left:5px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--navy2)}
+.empty{text-align:center;padding:28px 10px;color:var(--muted)}
+/* editor */
+#editor{position:fixed;inset:0;background:var(--bg);z-index:40;display:none;overflow:auto}
+#editor.on{display:block}
+.ebox{max-width:1100px;margin:auto;padding:0 16px 40px}
+.ehead{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 0}
+.ehead .l1{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ehead .ttl{font-weight:800;font-size:1.1rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ehead .live{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.navchips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.navchips a{flex:none;text-decoration:none;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:600}
+.egrid{display:grid;grid-template-columns:1fr 330px;gap:16px;align-items:start}
+@media(max-width:900px){.egrid{grid-template-columns:1fr}}
+.egrid .side{position:sticky;top:120px}
+@media(max-width:900px){.egrid .side{position:static}}
+.crit{display:grid;grid-template-columns:1fr 160px 70px 30px;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.crit .name{font-size:.93rem;font-weight:600}
+.crit .name small{display:block;font-weight:400;color:var(--muted);font-size:.76rem}
+.crit input[type=range]{width:100%;accent-color:var(--navy2)}
+.crit input[type=range].unset{opacity:.3}
+.crit .nb{text-align:center;font-weight:700;padding:6px 4px}
+.crit .x{background:none;border:0;color:var(--muted);padding:0;font-size:1.2rem;line-height:1}
+@media(max-width:600px){.crit{grid-template-columns:1fr 70px 30px}.crit .name{grid-column:1/-1}.crit input[type=range]{grid-column:1}}
+.tools{display:flex;gap:8px;margin:8px 0 10px}
+.lock{font-size:.76rem;color:var(--muted);font-weight:500}
+.big{font-size:2.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.big span{font-size:1.1rem;color:var(--muted);font-weight:600}
+.verdict{display:inline-block;margin-top:8px;padding:5px 12px;border-radius:20px;color:#fff;font-weight:700;font-size:.85rem}
+.bar{margin:9px 0}
+.bar .l{display:flex;justify-content:space-between;font-size:.84rem;margin-bottom:3px}
+.bar .t{height:9px;background:#e8ecf4;border-radius:6px;overflow:hidden}
+.bar .f{height:100%;background:var(--navy2);border-radius:6px;transition:width .2s}
+.bar .f.low{background:var(--red)}
+pre#bil{white-space:pre-wrap;background:#f6f8fc;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:.78rem;display:none}
+/* overlays */
+.ov{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto}
+.ov.on{display:flex}
+#sheet{z-index:60}#modal{z-index:80;align-items:center}
+.ov .box{background:#fff;border-radius:14px;width:100%;max-width:760px;padding:18px 20px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+#modal .box{max-width:400px}
+.ov h3{margin:0;font-size:1.15rem}
+.shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.set-ep{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.set-ep .h{display:grid;grid-template-columns:50px 1fr 90px;gap:8px;margin-bottom:8px}
+.set-cr{display:grid;grid-template-columns:1.2fr 1.6fr 70px 30px;gap:6px;margin-bottom:6px}
+@media(max-width:600px){.set-cr{grid-template-columns:1fr 60px 30px}.set-cr .dd{grid-column:1/-1;order:3}}
+.frm{display:grid;gap:10px}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;margin:2px 0;color:var(--ink);font-weight:500}
+.chk input{width:auto}
+.mx{border-collapse:collapse;font-size:.82rem;width:auto;min-width:100%}
+.mx th,.mx td{border:1px solid var(--line);padding:6px 8px;text-align:center;white-space:normal}
+.mx td.p,.mx th.p{text-align:left;position:sticky;left:0;background:#fff;min-width:210px;z-index:1}
+.mx tr.grp td{background:#eef2f9;font-weight:700;text-align:left}
+.mx th input[type=text]{font-size:.78rem;padding:4px 6px}
+.mx select{font-size:.74rem;padding:3px}
+.pcat{font-weight:700;margin:12px 0 4px;font-size:.86rem;color:var(--navy2)}
+.pline{display:grid;grid-template-columns:1fr 190px;gap:8px;align-items:center;padding:4px 0;border-top:1px solid var(--line);font-size:.86rem}
+.pw-show{font-family:monospace;font-size:1.2rem;background:#f1f5fc;border:1px dashed var(--navy2);padding:10px;border-radius:8px;text-align:center;letter-spacing:1px;user-select:all}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="gate"><div class="gload">Chargement…</div></div>
+
+<div id="app" hidden>
+<header class="top"><div class="in">
+  <div><h1>🛡️ Grille de notation – Police nationale</h1><p>Oral · Tir · Sport · Conduite</p></div>
+  <div class="ubar" id="userbar"></div>
+</div></header>
+
+<main>
+  <section class="stats" id="stats"></section>
+
+  <section class="card" id="listCard">
+    <h2>Candidats <button class="bigbtn" id="addBtn">＋ Nouveau candidat</button></h2>
+    <div class="toolbar" id="toolbar">
+      <input type="search" id="q" placeholder="🔍 Rechercher un nom, un n°, un évaluateur…">
+      <select id="fil">
+        <option value="all">Tous les avis</option><option value="fav">Favorable</option><option value="ins">Insuffisant</option><option value="def">Défavorable</option><option value="cours">En cours</option>
+      </select>
+      <select id="srt"></select>
+    </div>
+    <div class="tw" id="tbl"></div>
+  </section>
+
+  <section class="card" id="toolsCard">
+    <h2>Outils</h2>
+    <div class="btns">
+      <button class="sec" id="tRank" data-perm="export">📋 Copier le classement</button>
+      <button class="sec" id="tCsv" data-perm="export">📊 Copier en CSV (Excel)</button>
+      <button class="sec" id="tBackup" data-perm="export">💾 Copier une sauvegarde</button>
+      <button class="sec" id="tImport" data-perm="config">📥 Importer une sauvegarde</button>
+      <button class="sec" id="tSet" data-perm="config">⚙️ Critères, coefficients & seuils</button>
+      <button class="danger" id="tAll" data-perm="cand_suppr">🗑 Tout effacer</button>
+    </div>
+    <p class="note" id="modeNote"></p>
+  </section>
+</main>
+
+<div id="editor"><div class="ebox">
+  <div class="ehead">
+    <div class="l1">
+      <div class="btns"><button class="sec" id="eclose">← Retour à la liste</button><button class="sec" id="ePrev" title="Candidat précédent">‹</button><button class="sec" id="eNext" title="Candidat suivant">›</button></div>
+      <div class="ttl" id="etitle"></div>
+      <div class="live" id="liveBox"><span id="lTotal">—</span><span class="tag" id="lVerdict">—</span></div>
+    </div>
+    <div class="navchips" id="navchips"></div>
+  </div>
+  <div class="egrid">
+    <div>
+      <section class="card" id="s-info">
+        <h2>🧑 Candidat <span class="lock" id="infoLock"></span></h2>
+        <div class="row">
+          <div><label for="f-nom">Nom et prénom</label><input type="text" id="f-nom" placeholder="Ex. Martin Léa" autocomplete="off"></div>
+          <div><label for="f-num">N° de candidat</label><input type="text" id="f-num"></div>
+          <div><label for="f-date">Date</label><input type="date" id="f-date"></div>
+          <div><label for="f-eval">Évaluateur</label><input type="text" id="f-eval"></div>
+        </div>
+      </section>
+      <div id="eps" style="display:grid;gap:16px;margin-top:16px"></div>
+      <section class="card" id="s-bilan" style="margin-top:16px">
+        <h2>📝 Appréciation générale</h2>
+        <textarea id="f-generale" placeholder="Points forts, axes d'amélioration, avis global…"></textarea>
+      </section>
+    </div>
+    <div class="side">
+      <div class="card">
+        <h2>Résultat</h2>
+        <div id="resBox">
+          <div class="big" id="pTotal">—<span> / 20</span></div>
+          <div id="pVerdict" class="verdict">—</div>
+        </div>
+        <div style="margin-top:12px;font-size:.82rem;color:var(--muted)" id="pProg"></div>
+        <div class="bar" style="margin-top:4px"><div class="t"><div class="f" id="pProgBar" style="width:0"></div></div></div>
+        <div id="pBars" style="margin-top:10px"></div>
+        <div class="btns" style="margin-top:12px">
+          <button id="eNextSave">💾 Enregistrer et suivant ›</button>
+          <button class="sec" id="eCopy">📋 Copier le bilan</button>
+          <button class="danger" id="eDel">🗑 Supprimer</button>
+        </div>
+        <p class="note">Enregistrement automatique. Astuce : tapez la note puis <b>Entrée</b> pour passer au critère suivant.</p>
+        <pre id="bil"></pre>
+      </div>
+    </div>
+  </div>
+</div></div>
+</div>
+
+<div class="ov" id="sheet"><div class="box" id="sbox"></div></div>
+<div class="ov" id="modal"><div class="box"><p id="mmsg" style="margin:0 0 16px"></p><div class="btns" style="justify-content:flex-end"><button class="sec" id="mno">Annuler</button><button class="del" id="myes">Supprimer</button></div></div></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   OUTILS
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>n==null?"—":(Math.round(n*100)/100).toString().replace(".",",");
+const nm=c=>(c.nom||"").trim()||"Sans nom";
+const clone=o=>JSON.parse(JSON.stringify(o));
+const isObj=v=>v&&typeof v==="object"&&!Array.isArray(v);
+function deepMerge(a,b){const o=Object.assign({},a);for(const k in b){o[k]=isObj(b[k])&&isObj(o[k])?deepMerge(o[k],b[k]):b[k]}return o}
+const RED="#c8102e",OK="#1d8a4e",WARN="#d98200",GREY="#6b7893";
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2600)}
+function fail(e){console.error(e);toast(e&&e.code==="invalid_argument"?"Action refusée : droits insuffisants sur la base (niveau Contributeur requis)":"Erreur d'enregistrement des données")}
+const dt=t=>t?new Date(t).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"}):"jamais";
+
+/* =====================================================================
+   COUCHE DE DONNÉES : base partagée (db) ou stockage local de secours
+   ===================================================================== */
+let DBAPI=null,USERAPI=null,ONPLATFORM=false;
+async function initPlatform(){
+  // la plateforme injecte "claude" après le premier passage du script : on l'attend
+  for(let i=0;i<80&&!(typeof claude!=="undefined"&&claude&&claude.use);i++)await new Promise(r=>setTimeout(r,100));
+  if(typeof claude!=="undefined"&&claude&&claude.use){
+    ONPLATFORM=true;
+    status("Connexion à la base de données…");
+    try{DBAPI=await tmo(claude.use("db"),14000,"Base de données")}catch(e){DBAPI=null;BOOTERR=e}
+    try{USERAPI=await tmo(claude.use("user"),8000,"Identité")}catch(e){USERAPI=null}
+  }
+}
+let BOOTERR=null;
+const tmo=(p,ms,label)=>Promise.race([Promise.resolve(p),new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout",message:label+" : pas de réponse après "+Math.round(ms/1000)+" s"}),ms))]);
+const status=t=>{const g=document.querySelector("#gate .gload");if(g)g.textContent=t};
+const errTxt=e=>e?(e.code?e.code+" – ":"")+(e.message||String(e)):"";
+const withId=(id,d)=>Object.assign({id},clone(d));
+const Cloud={
+  async get(p){const s=await DBAPI.doc(p).get();return s.exists?clone(s.data()):null},
+  set(p,o){return DBAPI.doc(p).set(o)},
+  update(p,o){return DBAPI.doc(p).update(o)},
+  del(p){return DBAPI.doc(p).delete()},
+  async list(c){const s=await DBAPI.collection(c).get();return s.docs.map(d=>withId(d.id,d.data()))},
+  watch(c,cb,err){return DBAPI.collection(c).onSnapshot(s=>cb(s.docs.map(d=>withId(d.id,d.data()))),err||(()=>{}))},
+  watchDoc(p,cb,err){return DBAPI.doc(p).onSnapshot(s=>cb(s.exists?clone(s.data()):null),err||(()=>{}))}
+};
+const Local=(()=>{
+  const K="pn3-local";let m={};const ls=[];
+  const load=()=>{try{m=JSON.parse(localStorage.getItem(K))||{}}catch(e){m={}}};
+  const save=()=>{try{localStorage.setItem(K,JSON.stringify(m))}catch(e){}};
+  const inColl=(p,c)=>p.indexOf(c+"/")===0&&p.split("/").length===c.split("/").length+1;
+  const items=c=>Object.keys(m).filter(p=>inColl(p,c)).map(p=>withId(p.split("/").pop(),m[p]));
+  const notify=()=>ls.slice().forEach(f=>f());
+  load();
+  addEventListener("storage",e=>{if(e.key===K){load();notify()}});
+  const sub=f=>{ls.push(f);setTimeout(f,0);return()=>{const i=ls.indexOf(f);if(i>=0)ls.splice(i,1)}};
+  return{
+    async get(p){return m[p]?clone(m[p]):null},
+    async set(p,o){m[p]=clone(o);save();notify()},
+    async update(p,o){if(!m[p])throw{code:"invalid_argument",message:"document absent"};m[p]=deepMerge(m[p],clone(o));save();notify()},
+    async del(p){delete m[p];save();notify()},
+    async list(c){return items(c)},
+    watch(c,cb){return sub(()=>cb(items(c)))},
+    watchDoc(p,cb){return sub(()=>cb(m[p]?clone(m[p]):null))}
+  };
+})();
+let S=Local;
+const chains={};
+function enqueue(path,fn){const p=(chains[path]||Promise.resolve()).catch(()=>{}).then(fn);chains[path]=p;return p}
+
+/* =====================================================================
+   CRYPTO : mots de passe salés (PBKDF2-SHA256)
+   ===================================================================== */
+const enc=new TextEncoder();
+const b64=buf=>btoa(String.fromCharCode.apply(null,new Uint8Array(buf)));
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const newSalt=()=>b64(crypto.getRandomValues(new Uint8Array(16)));
+const ITER=150000;
+async function hashPw(pw,salt,iter){
+  const key=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveBits"]);
+  return b64(await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:unb64(salt),iterations:iter||ITER},key,256));
+}
+function genPw(){
+  const al="abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from(crypto.getRandomValues(new Uint8Array(12))).map(x=>al[x%al.length]).join("");
+}
+const UREG=/^[a-z0-9][a-z0-9._-]{2,29}$/;
+
+/* =====================================================================
+   GRADES & PERMISSIONS
+   ===================================================================== */
+const PALETTE=[["#2b5fb4","Bleu"],["#e8782a","Orange"],["#1d8a4e","Vert"],["#7b3fa0","Violet"],["#c8102e","Rouge"],["#5b6882","Gris"]];
+function DEF(){
+  const mk=(id,t,ic,coef,arr)=>({id,t,ic,coef,crit:arr.map((a,i)=>({id:id+i,n:a[0],d:a[1],w:a[2]}))});
+  return{elim:5,adm:10,ep:[
+    mk("oral","Oral","🎤",3,[["Expression & clarté","Élocution, vocabulaire, structure du discours",3],["Motivation & connaissance du métier","Projet professionnel, institution, missions",3],["Mise en situation","Réactivité, bon sens, prise de décision",3],["Éthique & déontologie","Respect de la loi, intégrité, neutralité",3],["Posture & maîtrise de soi","Tenue, écoute, gestion du stress",2]]),
+    mk("tir","Tir","🎯",2,[["Sécurité & manipulation","Règles de sécurité, gestes réglementaires",4],["Précision","Groupement et placement des tirs",4],["Rapidité & gestion du stress","Cadence, régularité sous contrainte",2],["Posture & technique","Position, visée, contrôle de la détente",2]]),
+    mk("sport","Sport","🏃",2,[["Endurance","Course navette / demi-fond",3],["Vitesse & agilité","Parcours, sprint, changements de direction",2],["Force & gainage","Tractions, pompes, gainage",2],["Engagement & esprit d'équipe","Combativité, fair-play, cohésion",1]]),
+    mk("conduite","Conduite","🚓",2,[["Respect du code & sécurité","Priorités, vitesse, signalisation",4],["Maîtrise du véhicule","Trajectoires, freinage, manœuvres",3],["Anticipation & observation","Rétroviseurs, lecture de la route",2],["Sang-froid en situation d'urgence","Conduite adaptée sous pression",2]])
+  ]};
+}
+const BLUE="#2b5fb4",ORANGE="#e8782a";
+const CCDGRADE=()=>({id:"ccd",name:"CCD",color:"#5b6882",perms:{cand_voir:true}});
+const GVER=2;
+function DEFGRADES(){
+  const P=a=>Object.fromEntries(a.map(k=>[k,true]));
+  const noter=["noter_oral","noter_tir","noter_sport","noter_conduite"];
+  const all=["cand_voir","cand_creer","cand_modifier","cand_suppr",...noter,"classement","export","config","comptes","grades"];
+  return[
+    {id:"directeur",name:"Directeur FTSI",color:BLUE,perms:P(all)},
+    {id:"adjoint",name:"Adjoint FTSI",color:BLUE,perms:P(all.filter(k=>k!=="grades"))},
+    {id:"referent",name:"Référent FTSI",color:BLUE,perms:P(["cand_voir","cand_creer","cand_modifier",...noter,"classement","export"])},
+    {id:"instructeur",name:"Instructeur FTSI",color:BLUE,perms:P(["cand_voir","cand_creer","cand_modifier",...noter,"classement"])},
+    {id:"formateur",name:"Formateur FTSI",color:ORANGE,perms:P(["cand_voir","cand_modifier",...noter])},
+    {id:"aide",name:"Aide Formateur FTSI",color:ORANGE,perms:P(["cand_voir",...noter])},
+    CCDGRADE()
+  ];
+}
+function permList(){
+  const b=[
+    {k:"cand_voir",l:"Voir la liste et les fiches des candidats",g:"Candidats"},
+    {k:"cand_creer",l:"Créer des candidats",g:"Candidats"},
+    {k:"cand_modifier",l:"Modifier les informations des candidats",g:"Candidats"},
+    {k:"cand_suppr",l:"Supprimer des candidats",g:"Candidats"}];
+  const n=DB.cfg.ep.map(e=>({k:"noter_"+e.id,l:"Noter l'épreuve : "+e.t,g:"Notation"}));
+  const r=[
+    {k:"classement",l:"Voir les notes finales, avis et classement",g:"Résultats"},
+    {k:"export",l:"Copier / exporter (classement, CSV, sauvegarde)",g:"Résultats"},
+    {k:"config",l:"Modifier critères, coefficients, seuils / importer",g:"Administration"},
+    {k:"comptes",l:"Gérer les comptes",g:"Administration"},
+    {k:"grades",l:"Gérer les grades et leurs permissions",g:"Administration"}];
+  return b.concat(n,r);
+}
+let ME=null,ACC=[],GRADES=DEFGRADES();
+const DB={list:[],cfg:DEF()};
+function can(k,acc){
+  acc=acc||ME;if(!acc)return false;if(acc.admin)return true;
+  const o=acc.perms&&acc.perms[k];if(o===true||o===false)return o;
+  const g=GRADES.find(x=>x.id===acc.grade);return !!(g&&g.perms&&g.perms[k]);
+}
+const gi=id=>{const i=GRADES.findIndex(g=>g.id===id);return i<0?999:i};
+function gradeOf(id){return GRADES.find(g=>g.id===id)}
+function gbadge(id){const g=gradeOf(id);return`<span class="gb" style="background:${g?esc(g.color):GREY}">${esc(g?g.name:"Sans grade")}</span>`}
+function canManage(t){
+  if(!ME||!t)return false;if(ME.admin)return true;
+  if(!can("comptes")||t.admin||t.id===ME.id)return false;
+  return gi(t.grade)>gi(ME.grade);
+}
+const adminCount=()=>ACC.filter(a=>a.admin&&a.active!==false).length;
+
+/* =====================================================================
+   MODÈLE DE NOTATION
+   ===================================================================== */
+function noteEp(e,st){let sw=0,t=0;e.crit.forEach(c=>{const v=st.scores[c.id];if(typeof v==="number"){sw+=c.w;t+=v*c.w}});return sw?t/sw:null}
+function evalC(st){
+  const cfg=DB.cfg;let sc=0,t=0,done=0,tot=0;const notes={},fails=[];
+  cfg.ep.forEach(e=>{
+    const n=noteEp(e,st);notes[e.id]=n;
+    const k=e.crit.filter(c=>typeof st.scores[c.id]==="number").length;done+=k;tot+=e.crit.length;
+    if(n!==null){sc+=e.coef;t+=n*e.coef;if(k===e.crit.length&&n<cfg.elim)fails.push(e.t)}
+  });
+  const total=sc?t/sc:null,complete=tot>0&&done===tot;
+  let v,col,key;
+  if(fails.length){v="Défavorable";col=RED;key="def"}
+  else if(!complete){v="En cours";col=GREY;key="cours"}
+  else if(total>=cfg.adm){v="Favorable";col=OK;key="fav"}
+  else{v="Insuffisant";col=WARN;key="ins"}
+  return{notes,total,done,tot,complete,fails,v,col,key};
+}
+function isEmpty(c){return !(c.nom||"").trim()&&!(c.num||"").trim()&&!(c.eval||"").trim()&&!(c.generale||"").trim()&&!Object.values(c.scores||{}).some(v=>typeof v==="number")&&!Object.values(c.comm||{}).some(v=>(v||"").trim())}
+function blank(){return{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),nom:"",num:"",date:new Date().toISOString().slice(0,10),eval:"",generale:"",scores:{},comm:{},created:Date.now()}}
+function norm(c){c.scores=c.scores||{};c.comm=c.comm||{};return c}
+
+/* =====================================================================
+   ÉCRAN D'ACCÈS (connexion / création admin / changement mdp)
+   ===================================================================== */
+const gate=h=>{$("#gate").innerHTML=h;$("#gate").hidden=false;$("#app").hidden=true};
+const modeText=()=>DBAPI?"☁️ Données partagées entre tous les utilisateurs autorisés.":"💻 Mode local : comptes et données enregistrés uniquement dans ce navigateur.";
+let fails=0,lockUntil=0;
+function seeBtn(inp,btn){$(btn).onclick=()=>{const i=$(inp);i.type=i.type==="password"?"text":"password"}}
+
+function viewLogin(msg){
+  gate(`<form class="gbox" id="lf">
+    <div style="font-size:2rem">🛡️</div><h1>Accès sécurisé</h1>
+    <div class="sub">Grille de notation – Police nationale. Connectez-vous avec votre compte.</div>
+    <label for="lu">Identifiant</label><input id="lu" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="lp">Mot de passe</label><div class="pw"><input id="lp" type="password" autocomplete="current-password" required><button type="button" id="lsee" class="sec small">👁</button></div>
+    <div class="err" id="lerr">${esc(msg||"")}</div>
+    <button type="submit" id="lgo" style="width:100%;margin-top:6px">Se connecter</button>
+    <p class="note">${modeText()}</p></form>`);
+  seeBtn("#lp","#lsee");$("#lu").focus();
+  $("#lf").onsubmit=async e=>{
+    e.preventDefault();const b=$("#lgo"),er=$("#lerr");
+    if(lockUntil>Date.now()){er.textContent="Trop de tentatives. Réessayez dans "+Math.ceil((lockUntil-Date.now())/1000)+" s.";return}
+    b.disabled=true;b.textContent="Vérification…";er.textContent="";
+    try{await login($("#lu").value,$("#lp").value)}
+    catch(x){er.textContent=x&&x.msg||"Identifiant ou mot de passe incorrect.";b.disabled=false;b.textContent="Se connecter";$("#lp").value="";$("#lp").focus()}
+  };
+}
+async function login(u,pw){
+  u=(u||"").trim().toLowerCase();
+  let a=null;
+  if(UREG.test(u))a=await S.get("accounts/"+u);
+  let ok=false;
+  if(a&&a.active!==false&&a.salt){ok=(await hashPw(pw,a.salt,a.iter))===a.hash}
+  else await hashPw(pw,newSalt());
+  if(!ok){fails++;if(fails>=5){lockUntil=Date.now()+30000;fails=0;throw{msg:"Trop de tentatives. Compte verrouillé 30 secondes."}}throw{msg:a&&a.active===false?"Ce compte est désactivé. Contactez un administrateur.":"Identifiant ou mot de passe incorrect."}}
+  fails=0;
+  await startSession(Object.assign({id:u},a));
+}
+function viewError(m,detail){
+  gate(`<div class="gbox"><div style="font-size:2rem">⚠️</div><h1>Connexion impossible</h1><div class="sub">${esc(m)}</div>${detail?`<p class="note" style="word-break:break-word">Détail technique : ${esc(detail)}</p>`:""}<button id="rl" style="width:100%">Réessayer</button></div>`);
+  $("#rl").onclick=()=>location.reload();
+}
+function viewPwChange(){
+  gate(`<form class="gbox" id="pf">
+    <div style="font-size:2rem">🔑</div><h1>Choisissez votre mot de passe</h1>
+    <div class="sub">Pour des raisons de sécurité, vous devez remplacer le mot de passe provisoire avant de continuer.</div>
+    <label for="np">Nouveau mot de passe (8 caractères minimum)</label><input id="np" type="password" autocomplete="new-password" required>
+    <label for="np2">Confirmer</label><input id="np2" type="password" autocomplete="new-password" required>
+    <div class="err" id="perr"></div>
+    <button type="submit" style="width:100%;margin-top:6px">Enregistrer et continuer</button>
+    <button type="button" class="sec" id="pout" style="width:100%;margin-top:8px">Annuler (déconnexion)</button></form>`);
+  $("#np").focus();$("#pout").onclick=()=>logout();
+  $("#pf").onsubmit=async e=>{
+    e.preventDefault();const p=$("#np").value;
+    if(p.length<8){$("#perr").textContent="Au moins 8 caractères.";return}
+    if(p!==$("#np2").value){$("#perr").textContent="Les mots de passe ne correspondent pas.";return}
+    try{await setPassword(ME.id,p,false);showApp()}catch(x){fail(x);$("#perr").textContent="Échec de l'enregistrement."}
+  };
+}
+async function setPassword(id,pw,must){
+  const salt=newSalt(),hash=await hashPw(pw,salt,ITER);
+  await S.update("accounts/"+id,{salt,iter:ITER,hash,must:!!must});
+  if(ME&&ME.id===id){ME.hash=hash;ME.salt=salt;ME.iter=ITER;ME.must=false;setSess({u:id,h:hash})}
+}
+
+/* ---------- session ---------- */
+const SESS="pn3-sess";
+const getSess=()=>{try{return JSON.parse(sessionStorage.getItem(SESS))}catch(e){return null}};
+const setSess=v=>{try{v?sessionStorage.setItem(SESS,JSON.stringify(v)):sessionStorage.removeItem(SESS)}catch(e){}};
+let unsubs=[],lastAct=Date.now(),idleT=null,gTimer=null,cTimer=null;
+async function startSession(a){
+  ME=a;setSess({u:a.id,h:a.hash});
+  try{
+    const g=await S.get("config/grades");GRADES=(g&&Array.isArray(g.list)&&g.list.length)?g.list:DEFGRADES();
+    if(g&&Array.isArray(g.list)&&g.v!==GVER){
+      if(!GRADES.some(x=>x.id==="ccd"))GRADES.push(CCDGRADE());
+      S.set("config/grades",{list:clone(GRADES),v:GVER}).catch(()=>{});
+    }
+    const c=await S.get("config/main");DB.cfg=(c&&c.cfg&&Array.isArray(c.cfg.ep))?c.cfg:DEF();
+  }catch(e){}
+  S.update("accounts/"+a.id,{lastLogin:Date.now()}).catch(()=>{});
+  if(ME.must){viewPwChange();return}
+  showApp();
+}
+function showApp(){
+  $("#gate").hidden=true;$("#app").hidden=false;
+  renderUserbar();subscribeAll();applyPerms();
+  lastAct=Date.now();clearInterval(idleT);
+  idleT=setInterval(()=>{if(ME&&Date.now()-lastAct>30*60000)logout("Déconnexion automatique après 30 minutes d'inactivité.")},20000);
+}
+["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>{lastAct=Date.now()},true));
+function unsubAll(){unsubs.forEach(f=>{try{f()}catch(e){}});unsubs=[]}
+function subscribeAll(){
+  unsubAll();
+  unsubs.push(S.watch("accounts",arr=>{ACC=arr;syncMe();rerenderSheet()},()=>{}));
+  unsubs.push(S.watchDoc("config/grades",d=>{if(gTimer)return;GRADES=(d&&Array.isArray(d.list)&&d.list.length)?d.list:DEFGRADES();if(ME){applyPerms();rerenderSheet()}},()=>{}));
+  unsubs.push(S.watchDoc("config/main",d=>{if(cTimer)return;DB.cfg=(d&&d.cfg&&Array.isArray(d.cfg.ep))?d.cfg:DEF();if(ME&&!cur)renderAll()},()=>{}));
+  unsubs.push(S.watch("candidates",onCands,e=>fail(e)));
+}
+function syncMe(){
+  if(!ME||!ACC.length)return;
+  const a=ACC.find(x=>x.id===ME.id);
+  if(!a||a.active===false||a.hash!==ME.hash){logout("Votre session a été fermée : votre compte a été modifié ou désactivé.");return}
+  const before=JSON.stringify([ME.grade,ME.admin,ME.perms,ME.nom]);
+  ME=Object.assign({},a);
+  if(JSON.stringify([ME.grade,ME.admin,ME.perms,ME.nom])!==before){renderUserbar();applyPerms()}
+}
+async function logout(msg){
+  clearInterval(idleT);unsubAll();
+  try{await flushNow()}catch(e){}
+  ME=null;cur=null;DB.list=[];ACC=[];setSess(null);
+  hideEditor();closeSheet();$("#modal").classList.remove("on");
+  viewLogin(msg||"");
+}
+
+/* ---------- barre utilisateur ---------- */
+function renderUserbar(){
+  if(!ME)return;
+  const g=gradeOf(ME.grade),ini=(ME.nom||ME.id).split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  $("#userbar").innerHTML=`<div class="me"><span class="av" style="border-color:${esc(g?g.color:GREY)}">${esc(ini)}</span><div><b>${esc(ME.nom||ME.id)}</b><br>${gbadge(ME.grade)}${ME.admin?'<span class="gb adm">Admin</span>':""}</div></div>
+   <div class="btns"><span class="gb" style="background:rgba(255,255,255,.2)" title="${DBAPI?"Les données sont partagées":"Les données restent dans ce navigateur"}">${DBAPI?"☁️ Base partagée":"💻 Local (non partagé)"}</span>${can("comptes")?'<button class="hb small" data-u="acc">👥 Comptes</button>':""}${can("grades")?'<button class="hb small" data-u="grades">🏅 Grades</button>':""}<button class="hb small" data-u="me">👤 Mon compte</button><button class="hb small" data-u="out">⏻ Déconnexion</button></div>`;
+}
+$("#userbar").addEventListener("click",e=>{
+  const b=e.target.closest("[data-u]");if(!b)return;
+  ({acc:renderAccounts,grades:renderGrades,me:renderMyAccount,out:()=>logout()})[b.dataset.u]();
+});
+
+/* =====================================================================
+   LISTE DES CANDIDATS
+   ===================================================================== */
+let cur=null,q="",fil="all",sortK="note",viewIds=[];
+function getRows(){
+  const cfg=DB.cfg,cl=can("classement");
+  let r=DB.list.map(c=>({c,r:evalC(c)}));
+  [...r].filter(x=>x.r.total!=null).sort((a,b)=>b.r.total-a.r.total).forEach((x,i)=>x.rank=i+1);
+  const s=q.trim().toLowerCase();
+  if(s)r=r.filter(x=>((x.c.nom||"")+" "+(x.c.num||"")+" "+(x.c.eval||"")).toLowerCase().includes(s));
+  if(cl&&fil!=="all")r=r.filter(x=>x.r.key===fil);
+  const cmp={note:(a,b)=>(b.r.total==null?-1:b.r.total)-(a.r.total==null?-1:a.r.total),nom:(a,b)=>nm(a.c).localeCompare(nm(b.c),"fr"),recent:(a,b)=>(b.c.created||0)-(a.c.created||0)};
+  cfg.ep.forEach(e=>cmp["ep:"+e.id]=(a,b)=>(b.r.notes[e.id]==null?-1:b.r.notes[e.id])-(a.r.notes[e.id]==null?-1:a.r.notes[e.id]));
+  r.sort(cmp[cl?sortK:(sortK==="nom"?"nom":"recent")]||cmp.recent);
+  return r;
+}
+function renderAll(){
+  if(!ME)return;
+  const cfg=DB.cfg,cl=can("classement"),voir=can("cand_voir");
+  $("#addBtn").hidden=!can("cand_creer");
+  $("#toolbar").hidden=!voir;
+  $("#fil").hidden=!cl;
+  const opts=cl?[["note","Trier : meilleure note"],["nom","Trier : nom (A→Z)"],["recent","Trier : plus récents"]].concat(cfg.ep.map(e=>["ep:"+e.id,"Trier : "+e.t])):[["nom","Trier : nom (A→Z)"],["recent","Trier : plus récents"]];
+  $("#srt").innerHTML=opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("");
+  if(!opts.some(o=>o[0]===sortK))sortK=cl?"note":"recent";
+  $("#srt").value=sortK;
+  if(!voir){$("#stats").innerHTML="";$("#tbl").innerHTML='<div class="empty">🔒 Votre grade ne permet pas de consulter la liste des candidats.</div>';viewIds=[];return}
+  const all=DB.list.map(c=>evalC(c)),done=all.filter(x=>x.complete);
+  const avg=done.length?done.reduce((s,x)=>s+x.total,0)/done.length:null;
+  const st=cl?[[DB.list.length,"Candidats"],[done.length,"Dossiers complets"],[all.filter(x=>x.key==="fav").length,"Favorables"],[all.filter(x=>x.key==="def").length,"Défavorables"],[avg==null?"—":fmt(avg),"Moyenne (dossiers complets)"]]:[[DB.list.length,"Candidats"],[done.length,"Dossiers complets"]];
+  $("#stats").innerHTML=st.map(s=>`<div class="stat"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");
+  const rows=getRows();viewIds=rows.map(x=>x.c.id);
+  if(!DB.list.length){$("#tbl").innerHTML=`<div class="empty">Aucun candidat pour le moment.${can("cand_creer")?'<br><br><button class="bigbtn" data-add="1">＋ Ajouter le premier candidat</button>':""}</div>`;return}
+  if(!rows.length){$("#tbl").innerHTML='<div class="empty">Aucun candidat ne correspond à la recherche.</div>';return}
+  const del=can("cand_suppr");
+  $("#tbl").innerHTML=`<table><thead><tr>${cl?"<th>#</th>":""}<th class="n">Candidat</th>${cl?cfg.ep.map(e=>`<th>${e.ic} ${esc(e.t)}</th>`).join("")+"<th>Note</th><th>Avis</th>":""}<th>Saisie</th>${del?"<th></th>":""}</tr></thead><tbody>`
+   +rows.map(o=>`<tr data-open="${esc(o.c.id)}">${cl?`<td>${o.rank||"–"}</td>`:""}<td class="n"><b>${esc(nm(o.c))}</b>${o.c.num?` <small style="color:var(--muted)">n°${esc(o.c.num)}</small>`:""}</td>${cl?cfg.ep.map(e=>`<td class="${o.r.notes[e.id]!=null&&o.r.notes[e.id]<cfg.elim?"low":""}">${fmt(o.r.notes[e.id])}</td>`).join("")+`<td><b>${fmt(o.r.total)}</b></td><td><span class="tag" style="background:${o.r.col}">${o.r.v}</span></td>`:""}<td>${o.r.done}/${o.r.tot}<span class="mini"><i style="width:${o.r.tot?o.r.done/o.r.tot*100:0}%"></i></span></td>${del?`<td><button class="danger small" data-del="${esc(o.c.id)}">Supprimer</button></td>`:""}</tr>`).join("")
+   +"</tbody></table>";
+}
+function applyPerms(){
+  if(!ME)return;
+  document.querySelectorAll("[data-perm]").forEach(b=>b.hidden=!can(b.dataset.perm));
+  $("#toolsCard").hidden=![...document.querySelectorAll("#toolsCard [data-perm]")].some(b=>!b.hidden);
+  $("#modeNote").textContent=modeText()+" Votre accès dépend de votre grade : les droits sont définis par les administrateurs.";
+  renderUserbar();renderAll();
+  if(cur){applyEditorPerms();refresh()}
+}
+function onCands(arr){
+  if(!ME)return;
+  arr.forEach(norm);
+  if(cur){
+    const r=arr.find(x=>x.id===cur.id);
+    if(r){mergeRemote(cur,r);delete cur._new}
+  }
+  DB.list=arr.map(c=>cur&&c.id===cur.id?cur:c);
+  if(cur&&cur._new&&!DB.list.includes(cur))DB.list.push(cur);
+  renderAll();
+  if(cur){fillValues();refresh()}
+}
+function mergeRemote(c,r){
+  const act=document.activeElement,p=(pendId===c.id&&pend)||{};
+  ["nom","num","date","eval","generale"].forEach(k=>{if(p[k]===undefined&&r[k]!==undefined&&!(act&&act.id==="f-"+k))c[k]=r[k]});
+  Object.keys(r.scores||{}).forEach(id=>{if(!(p.scores&&id in p.scores))c.scores[id]=r.scores[id]});
+  Object.keys(r.comm||{}).forEach(e=>{if(!(p.comm&&e in p.comm)&&!(act&&act.dataset&&act.dataset.comm===e))c.comm[e]=r.comm[e]});
+}
+
+/* =====================================================================
+   ÉDITEUR DE FICHE
+   ===================================================================== */
+let pend=null,pendId=null,pt=null,CRITEP={};
+function queuePatch(partial){
+  if(!cur)return;
+  if(pendId&&pendId!==cur.id)flushNow();
+  pendId=cur.id;pend=deepMerge(pend||{},partial);
+  clearTimeout(pt);pt=setTimeout(flushNow,350);
+}
+function flushNow(){
+  clearTimeout(pt);pt=null;
+  if(!pend)return Promise.resolve();
+  const id=pendId,p=pend;pend=null;pendId=null;
+  return enqueue("candidates/"+id,()=>S.update("candidates/"+id,p)).catch(fail);
+}
+function buildEditor(){
+  const cfg=DB.cfg;CRITEP={};
+  $("#eps").innerHTML=cfg.ep.map(e=>{e.crit.forEach(c=>CRITEP[c.id]=e.id);return`<section class="card" id="s-${esc(e.id)}">
+    <h2><span>${e.ic} ${esc(e.t)} <span class="coef">coef. ${e.coef}</span> <span class="lock" data-lock="${esc(e.id)}"></span></span><span class="badge off" id="b-${esc(e.id)}">—</span></h2>
+    ${e.crit.map(c=>`<div class="crit"><div class="name">${esc(c.n)}<small>${esc(c.d)} · pond. ${c.w}</small></div>
+      <input type="range" class="rg unset" min="0" max="20" step="0.5" value="10" data-c="${esc(c.id)}" aria-label="${esc(c.n)}">
+      <input type="number" class="nb" min="0" max="20" step="0.5" inputmode="decimal" placeholder="—" data-n="${esc(c.id)}" aria-label="Note ${esc(c.n)}">
+      <button class="x" data-clr="${esc(c.id)}" title="Effacer cette note">×</button></div>`).join("")}
+    <div class="tools" data-tools="${esc(e.id)}"><button class="sec small" data-fill="${esc(e.id)}">Tout à 10</button><button class="sec small" data-clrall="${esc(e.id)}">Tout effacer</button></div>
+    <label>Observations</label><textarea data-comm="${esc(e.id)}" placeholder="Remarques sur l'épreuve…"></textarea></section>`}).join("");
+  $("#navchips").innerHTML=[["s-info","🧑 Infos"]].concat(cfg.ep.map(e=>["s-"+e.id,e.ic+" "+e.t]),[["s-bilan","📝 Bilan"]]).map(a=>`<a href="#${esc(a[0])}" data-go="${esc(a[0])}">${esc(a[1])}</a>`).join("");
+}
+const editInfo=()=>can("cand_modifier");
+const editEp=id=>can("noter_"+id);
+function applyEditorPerms(){
+  const ei=editInfo();
+  ["nom","num","date","eval","generale"].forEach(k=>$("#f-"+k).disabled=!ei);
+  $("#infoLock").textContent=ei?"":"🔒 lecture seule";
+  let any=ei;
+  DB.cfg.ep.forEach(e=>{
+    const ok=editEp(e.id);any=any||ok;
+    document.querySelectorAll(`#s-${e.id} [data-c],#s-${e.id} [data-n],#s-${e.id} [data-clr],#s-${e.id} [data-comm]`).forEach(x=>x.disabled=!ok);
+    const t=document.querySelector(`[data-tools="${e.id}"]`);if(t)t.hidden=!ok;
+    const l=document.querySelector(`[data-lock="${e.id}"]`);if(l)l.textContent=ok?"":"🔒 lecture seule";
+  });
+  const cl=can("classement");
+  $("#liveBox").hidden=!cl;$("#resBox").hidden=!cl;$("#pBars").hidden=!cl;$("#eCopy").hidden=!cl;
+  $("#eDel").hidden=!can("cand_suppr");
+  $("#eNextSave").hidden=!any;
+}
+function fillValues(){
+  if(!cur)return;const act=document.activeElement;
+  ["nom","num","date","eval","generale"].forEach(k=>{const el=$("#f-"+k);if(el!==act&&el.value!==(cur[k]||""))el.value=cur[k]||""});
+  document.querySelectorAll("[data-comm]").forEach(t=>{const v=(cur.comm&&cur.comm[t.dataset.comm])||"";if(t!==act&&t.value!==v)t.value=v});
+}
+function refresh(){
+  if(!cur)return;
+  const cfg=DB.cfg,r=evalC(cur),act=document.activeElement;
+  cfg.ep.forEach(e=>{
+    e.crit.forEach(c=>{
+      const v=cur.scores[c.id],has=typeof v==="number";
+      const rg=document.querySelector(`[data-c="${c.id}"]`),nb=document.querySelector(`[data-n="${c.id}"]`);
+      if(!rg||!nb)return;
+      rg.value=has?v:10;rg.classList.toggle("unset",!has);
+      if(act!==nb)nb.value=has?v:"";
+    });
+    const b=$("#b-"+e.id),n=r.notes[e.id];
+    if(b){b.textContent=n==null?"—":fmt(n)+" / 20";b.className="badge "+(n==null?"off":n<cfg.elim?"low":n>=15?"good":"")}
+  });
+  const tot=r.total==null?"—":fmt(r.total);
+  $("#pTotal").innerHTML=tot+"<span> / 20</span>";
+  const pv=$("#pVerdict");pv.textContent=r.v+(r.fails.length?" – note éliminatoire ("+r.fails.join(", ")+")":"");pv.style.background=r.col;
+  $("#lTotal").textContent=tot+" / 20";const lv=$("#lVerdict");lv.textContent=r.v;lv.style.background=r.col;
+  $("#pProg").textContent=r.done+" / "+r.tot+" critères notés";$("#pProgBar").style.width=(r.tot?r.done/r.tot*100:0)+"%";
+  $("#pBars").innerHTML=cfg.ep.map(e=>{const n=r.notes[e.id];return`<div class="bar"><div class="l"><span>${e.ic} ${esc(e.t)}</span><b>${fmt(n)}</b></div><div class="t"><div class="f ${n!=null&&n<cfg.elim?"low":""}" style="width:${(n||0)*5}%"></div></div></div>`}).join("");
+  $("#etitle").textContent=nm(cur)+(cur.num?" · n°"+cur.num:"");
+  const i=viewIds.indexOf(cur.id);$("#ePrev").disabled=i<=0;$("#eNext").disabled=i<0||i>=viewIds.length-1;
+}
+function openEditor(id){
+  if(!can("cand_voir"))return;
+  const c=DB.list.find(x=>x.id===id);if(!c)return;
+  cur=c;
+  ["nom","num","date","eval","generale"].forEach(k=>$("#f-"+k).value=cur[k]||"");
+  buildEditor();fillValues();applyEditorPerms();
+  $("#bil").style.display="none";
+  $("#editor").classList.add("on");document.body.style.overflow="hidden";$("#editor").scrollTop=0;
+  refresh();
+}
+function hideEditor(){$("#editor").classList.remove("on");document.body.style.overflow="";cur=null}
+function cleanupEmpty(c){
+  if(c&&c.createdBy===(ME&&ME.id)&&isEmpty(c)){
+    DB.list=DB.list.filter(x=>x.id!==c.id);
+    enqueue("candidates/"+c.id,()=>S.del("candidates/"+c.id)).catch(()=>{});
+  }
+}
+function closeEditor(){const c=cur;hideEditor();flushNow().then(()=>cleanupEmpty(c));renderAll()}
+async function newCandidate(){
+  if(!can("cand_creer")){toast("Votre grade ne permet pas de créer un candidat");return}
+  if(cur){const o=cur;await flushNow();cleanupEmpty(o)}
+  const c=blank();c.createdBy=ME.id;
+  enqueue("candidates/"+c.id,()=>S.set("candidates/"+c.id,clone(c))).catch(fail);
+  c._new=true;DB.list.push(c);renderAll();openEditor(c.id);
+  if(can("cand_modifier"))$("#f-nom").focus();
+}
+async function nav(dir){
+  const i=viewIds.indexOf(cur.id),t=viewIds[i+dir];
+  if(t==null)return false;
+  const o=cur;await flushNow();cleanupEmpty(o);openEditor(t);return true;
+}
+function setScore(id,v){
+  if(!cur||!editEp(CRITEP[id]))return;
+  cur.scores[id]=v;queuePatch({scores:{[id]:v}});refresh();
+}
+$("#editor").addEventListener("input",e=>{
+  const t=e.target;if(!cur)return;
+  if(t.dataset.c!=null)setScore(t.dataset.c,+t.value);
+  else if(t.dataset.n!=null){
+    if(t.value===""){setScore(t.dataset.n,null);return}
+    let v=parseFloat(t.value);if(isNaN(v))return;
+    if(v>20){v=20;t.value=20}if(v<0){v=0;t.value=0}
+    setScore(t.dataset.n,v);
+  }
+  else if(t.dataset.comm!=null){if(!editEp(t.dataset.comm))return;cur.comm[t.dataset.comm]=t.value;queuePatch({comm:{[t.dataset.comm]:t.value}})}
+  else if(t.id&&t.id.indexOf("f-")===0){if(!editInfo())return;const k=t.id.slice(2);cur[k]=t.value;queuePatch({[k]:t.value});refresh()}
+});
+$("#editor").addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.n!=null){
+    e.preventDefault();
+    const all=[...document.querySelectorAll("[data-n]:not(:disabled)")],i=all.indexOf(e.target),n=all[i+1];
+    if(n){n.focus();n.select();n.scrollIntoView({block:"center",behavior:"smooth"})}else e.target.blur();
+  }
+});
+$("#editor").addEventListener("click",e=>{
+  const t=e.target.closest("[data-clr],[data-fill],[data-clrall],[data-go]");if(!t||!cur)return;
+  if(t.dataset.clr)setScore(t.dataset.clr,null);
+  else if(t.dataset.fill||t.dataset.clrall){
+    const ep=DB.cfg.ep.find(x=>x.id===(t.dataset.fill||t.dataset.clrall));
+    ep.crit.forEach(c=>setScore(c.id,t.dataset.fill?10:null));
+  }
+  else if(t.dataset.go){e.preventDefault();const el=document.getElementById(t.dataset.go);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
+});
+$("#eclose").onclick=closeEditor;
+$("#ePrev").onclick=()=>nav(-1);
+$("#eNext").onclick=()=>nav(1);
+$("#eNextSave").onclick=async()=>{await flushNow();if(!(await nav(1))){closeEditor();toast("Dernier candidat de la liste")}else toast("Enregistré ✓")};
+$("#eDel").onclick=()=>delCandidate(cur.id);
+$("#eCopy").onclick=()=>{const t=bilan(cur);$("#bil").textContent=t;copyText(t,"Bilan copié ✓","Bilan du candidat")};
+
+/* =====================================================================
+   TEXTES EXPORTÉS
+   ===================================================================== */
+function bilan(c){
+  const r=evalC(c),cfg=DB.cfg;
+  let o=`GRILLE DE NOTATION – POLICE NATIONALE\nCandidat : ${nm(c)} (n° ${c.num||"—"})\nDate : ${c.date||"—"} · Évaluateur : ${c.eval||"—"}\n\n`;
+  cfg.ep.forEach(e=>{o+=`${e.t} (coef. ${e.coef}) : ${fmt(r.notes[e.id])}/20\n`;e.crit.forEach(k=>{o+=`   - ${k.n} : ${typeof c.scores[k.id]==="number"?fmt(c.scores[k.id])+"/20":"non noté"}\n`});if(c.comm&&c.comm[e.id])o+=`   Obs. : ${c.comm[e.id]}\n`});
+  o+=`\nNOTE FINALE : ${fmt(r.total)}/20 → ${r.v}${r.fails.length?" (note éliminatoire : "+r.fails.join(", ")+")":""}\n`;
+  if(c.generale)o+=`\nAppréciation : ${c.generale}\n`;
+  return o;
+}
+const sortedAll=()=>DB.list.map(c=>({c,r:evalC(c)})).sort((a,b)=>(b.r.total==null?-1:b.r.total)-(a.r.total==null?-1:a.r.total));
+const rankText=()=>"CLASSEMENT – POLICE NATIONALE\n"+sortedAll().map((o,i)=>`${i+1}. ${nm(o.c)} — ${fmt(o.r.total)}/20 (${DB.cfg.ep.map(e=>e.t+" "+fmt(o.r.notes[e.id])).join(", ")}) → ${o.r.v}`).join("\n");
+function csvText(){
+  const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const head=["Rang","Nom","N°","Date","Évaluateur"].concat(DB.cfg.ep.map(e=>e.t),["Note finale","Avis"]);
+  const lines=[head.map(q).join(";")];
+  sortedAll().forEach((o,i)=>lines.push([i+1,nm(o.c),o.c.num,o.c.date,o.c.eval].concat(DB.cfg.ep.map(e=>fmt(o.r.notes[e.id])),[fmt(o.r.total),o.r.v]).map(q).join(";")));
+  return lines.join("\n");
+}
+async function copyText(txt,msg,title){
+  try{await navigator.clipboard.writeText(txt);toast(msg)}
+  catch(e){sheet(`<div class="shead"><h3>${esc(title||"Texte à copier")}</h3><button class="sec small" data-sclose="1">✕ Fermer</button></div><p class="note" style="margin:0 0 8px">Copie automatique indisponible : sélectionnez le texte ci-dessous (Ctrl+A puis Ctrl+C).</p><textarea id="cp" readonly style="min-height:260px;font-family:monospace;font-size:.8rem">${esc(txt)}</textarea>`);const t=$("#cp");t.focus();t.select()}
+}
+
+/* =====================================================================
+   FENÊTRES
+   ===================================================================== */
+let SV=null;
+function sheet(html){$("#sbox").innerHTML=html;$("#sheet").classList.add("on")}
+function closeSheet(){$("#sheet").classList.remove("on");SV=null}
+const shead=(t,back)=>`<div class="shead"><h3>${t}</h3><div class="btns">${back?`<button class="sec small" data-act="${back}">← Retour</button>`:""}<button class="sec small" data-sclose="1">✕ Fermer</button></div></div>`;
+function rerenderSheet(){
+  if(!SV||!$("#sheet").classList.contains("on"))return;
+  if(SV.n==="accounts")renderAccounts();
+  else if(SV.n==="grades"&&!gTimer&&!document.activeElement.closest("#sbox"))renderGrades();
+}
+function askConfirm(msg,fn,label){
+  $("#mmsg").textContent=msg;$("#myes").textContent=label||"Supprimer";$("#modal").classList.add("on");
+  $("#myes").onclick=()=>{$("#modal").classList.remove("on");fn()};
+  $("#mno").onclick=()=>$("#modal").classList.remove("on");
+}
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape"||!ME)return;
+  if($("#modal").classList.contains("on"))$("#modal").classList.remove("on");
+  else if($("#sheet").classList.contains("on"))closeSheet();
+  else if($("#editor").classList.contains("on"))closeEditor();
+});
+$("#sheet").addEventListener("click",e=>{if(e.target.id==="sheet"||e.target.dataset.sclose)closeSheet()});
+function delCandidate(id){
+  if(!can("cand_suppr")){toast("Votre grade ne permet pas de supprimer un candidat");return}
+  const c=DB.list.find(x=>x.id===id);if(!c)return;
+  askConfirm("Supprimer définitivement « "+nm(c)+" » ?",()=>{
+    if(cur&&cur.id===id){pend=null;pendId=null;clearTimeout(pt);hideEditor()}
+    DB.list=DB.list.filter(x=>x.id!==id);renderAll();
+    enqueue("candidates/"+id,()=>S.del("candidates/"+id)).then(()=>toast("Candidat supprimé")).catch(fail);
+  });
+}
+
+/* ---------- liste : événements ---------- */
+$("#tbl").addEventListener("click",e=>{
+  const d=e.target.closest("[data-del]");if(d){e.stopPropagation();delCandidate(d.dataset.del);return}
+  if(e.target.closest("[data-add]")){newCandidate();return}
+  const o=e.target.closest("[data-open]");if(o)openEditor(o.dataset.open);
+});
+$("#addBtn").onclick=newCandidate;
+$("#q").addEventListener("input",e=>{q=e.target.value;renderAll()});
+$("#fil").addEventListener("change",e=>{fil=e.target.value;renderAll()});
+$("#srt").addEventListener("change",e=>{sortK=e.target.value;renderAll()});
+
+/* ---------- outils ---------- */
+$("#tRank").onclick=()=>{if(!can("export"))return;if(!DB.list.length){toast("Aucun candidat");return}copyText(rankText(),"Classement copié ✓","Classement")};
+$("#tCsv").onclick=()=>{if(!can("export"))return;if(!DB.list.length){toast("Aucun candidat");return}copyText(csvText(),"CSV copié ✓ — collez-le dans Excel","Export CSV")};
+$("#tBackup").onclick=()=>{if(!can("export"))return;copyText(JSON.stringify({list:DB.list.map(c=>{const o=clone(c);Object.keys(o).forEach(k=>{if(k[0]==="_")delete o[k]});return o}),cfg:DB.cfg}),"Sauvegarde copiée ✓ — collez-la dans un fichier texte","Sauvegarde complète")};
+$("#tAll").onclick=()=>{
+  if(!can("cand_suppr"))return;
+  if(!DB.list.length){toast("Aucun candidat à effacer");return}
+  askConfirm("Supprimer les "+DB.list.length+" candidats ? Cette action est définitive (pensez à faire une sauvegarde).",async()=>{
+    const ids=DB.list.map(c=>c.id);DB.list=[];renderAll();
+    for(const id of ids)await enqueue("candidates/"+id,()=>S.del("candidates/"+id)).catch(fail);
+    toast("Tous les candidats ont été effacés");
+  },"Tout effacer");
+};
+$("#tImport").onclick=()=>{
+  if(!can("config"))return;
+  sheet(shead("📥 Importer une sauvegarde")+`
+   <p class="note" style="margin:0 0 8px">Collez ici le texte d'une sauvegarde copiée avec « Copier une sauvegarde ».</p>
+   <textarea id="imp" style="min-height:200px;font-family:monospace;font-size:.8rem"></textarea>
+   <div class="btns" style="margin-top:12px"><button id="impMerge">Fusionner avec l'existant</button><button class="danger" id="impRep">Remplacer tout</button></div>`);
+  const run=async mode=>{
+    let d;try{d=JSON.parse($("#imp").value)}catch(e){toast("Texte invalide");return}
+    if(!d||!Array.isArray(d.list)){toast("Sauvegarde non reconnue");return}
+    if(mode==="rep"){for(const c of DB.list)await enqueue("candidates/"+c.id,()=>S.del("candidates/"+c.id)).catch(()=>{});if(d.cfg&&Array.isArray(d.cfg.ep)){DB.cfg=d.cfg;saveCfgNow()}}
+    for(const c of d.list){if(!c.id)c.id=blank().id;norm(c);await enqueue("candidates/"+c.id,()=>S.set("candidates/"+c.id,c)).catch(fail)}
+    closeSheet();toast(d.list.length+" candidat(s) importé(s) ✓");
+  };
+  $("#impMerge").onclick=()=>run("merge");$("#impRep").onclick=()=>run("rep");
+};
+
+/* ---------- réglages des critères ---------- */
+function saveCfg(){clearTimeout(cTimer);cTimer=setTimeout(saveCfgNow,600)}
+function saveCfgNow(){clearTimeout(cTimer);cTimer=null;enqueue("config/main",()=>S.set("config/main",{cfg:clone(DB.cfg)})).catch(fail)}
+function renderSettings(){
+  if(!can("config"))return;SV={n:"settings"};
+  const cfg=DB.cfg;
+  sheet(shead("⚙️ Critères, coefficients & seuils")+`
+   <div class="row" style="margin-bottom:12px">
+     <div><label>Note éliminatoire (/20)</label><input type="number" min="0" max="20" step="0.5" value="${cfg.elim}" data-sk="elim"></div>
+     <div><label>Seuil de réussite (/20)</label><input type="number" min="0" max="20" step="0.5" value="${cfg.adm}" data-sk="adm"></div>
+   </div>
+   ${cfg.ep.map((e,i)=>`<div class="set-ep"><div class="h"><div><label>Icône</label><input type="text" value="${esc(e.ic)}" data-ep="${i}" data-f="ic"></div><div><label>Épreuve</label><input type="text" value="${esc(e.t)}" data-ep="${i}" data-f="t"></div><div><label>Coefficient</label><input type="number" min="0" step="0.5" value="${e.coef}" data-ep="${i}" data-f="coef"></div></div>
+     ${e.crit.map((c,j)=>`<div class="set-cr"><input type="text" value="${esc(c.n)}" placeholder="Critère" data-cr="${i}.${j}" data-f="n"><input class="dd" type="text" value="${esc(c.d)}" placeholder="Description" data-cr="${i}.${j}" data-f="d"><input type="number" min="0" step="0.5" value="${c.w}" title="Pondération" data-cr="${i}.${j}" data-f="w"><button class="danger small" data-delc="${i}.${j}" title="Supprimer ce critère">✕</button></div>`).join("")}
+     <button class="sec small" data-addc="${i}">＋ Ajouter un critère</button></div>`).join("")}
+   <div class="btns"><button class="danger" id="setReset">Restaurer les valeurs par défaut</button><button data-sclose="1">Terminer</button></div>
+   <p class="note">Les notes déjà saisies sont conservées pour les critères qui existent toujours.</p>`);
+}
+$("#tSet").onclick=renderSettings;
+
+/* =====================================================================
+   COMPTES (administration)
+   ===================================================================== */
+function renderMyAccount(){
+  SV={n:"me"};
+  const perms=permList();
+  const groups=[...new Set(perms.map(p=>p.g))];
+  sheet(shead("👤 Mon compte")+`
+   <div class="me" style="margin-bottom:12px"><div><b style="font-size:1.05rem">${esc(ME.nom||ME.id)}</b> <span style="color:var(--muted)">(${esc(ME.id)})</span><br>${gbadge(ME.grade)}${ME.admin?'<span class="gb adm">Administrateur</span>':""}</div></div>
+   <div class="pcat">Changer mon mot de passe</div>
+   <div class="frm" style="max-width:360px">
+     <div><label for="mp0">Mot de passe actuel</label><input id="mp0" type="password" autocomplete="current-password"></div>
+     <div><label for="mp1">Nouveau mot de passe (8 caractères minimum)</label><input id="mp1" type="password" autocomplete="new-password"></div>
+     <div><label for="mp2">Confirmer</label><input id="mp2" type="password" autocomplete="new-password"></div>
+     <div class="err" id="mperr"></div>
+     <div><button data-act="mypw">Changer le mot de passe</button></div>
+   </div>
+   <div class="pcat" style="margin-top:18px">Mes permissions</div>
+   ${groups.map(g=>`<div style="margin:6px 0"><b style="font-size:.8rem;color:var(--muted)">${esc(g)}</b>${perms.filter(p=>p.g===g).map(p=>`<div class="chk" style="margin:1px 0">${can(p.k)?"✅":"⛔"} ${esc(p.l)}</div>`).join("")}</div>`).join("")}`);
+}
+function renderAccounts(){
+  if(!can("comptes"))return;SV={n:"accounts"};
+  const list=ACC.slice().sort((a,b)=>(b.admin?1:0)-(a.admin?1:0)||gi(a.grade)-gi(b.grade)||(a.nom||a.id).localeCompare(b.nom||b.id,"fr"));
+  sheet(shead("👥 Comptes utilisateurs")+`
+   <div class="btns" style="margin-bottom:10px"><button data-act="newacc">＋ Nouveau compte</button></div>
+   <div class="tw"><table><thead><tr><th class="n">Identifiant</th><th class="n">Nom</th><th>Grade</th><th>Rôle</th><th>État</th><th>Dernière connexion</th><th></th></tr></thead><tbody>
+   ${list.map(a=>`<tr><td class="n"><b>${esc(a.id)}</b>${a.id===ME.id?' <small style="color:var(--muted)">(vous)</small>':""}</td><td class="n">${esc(a.nom||"")}</td><td>${gbadge(a.grade)}</td><td>${a.admin?'<span class="gb adm">Admin</span>':"Utilisateur"}</td><td>${a.active===false?'<span class="tag" style="background:'+GREY+'">Désactivé</span>':'<span class="tag" style="background:'+OK+'">Actif</span>'}${a.must?' <small title="Doit changer son mot de passe">🔑</small>':""}</td><td>${dt(a.lastLogin)}</td><td>${canManage(a)||a.id===ME.id?`<button class="sec small" data-act="editacc" data-id="${esc(a.id)}">Modifier</button>`:'<span class="lock">—</span>'}</td></tr>`).join("")}
+   </tbody></table></div>
+   <p class="note">${list.length} compte(s). Les administrateurs ont tous les droits ; les autres comptes ne peuvent gérer que les comptes de grade inférieur au leur.</p>`);
+}
+function gradeOptions(sel,a){
+  const my=ME.admin?-1:gi(ME.grade);
+  return GRADES.map((g,i)=>({g,i})).filter(x=>ME.admin||x.i>my||(a&&x.g.id===a.grade)).map(x=>`<option value="${esc(x.g.id)}" ${x.g.id===sel?"selected":""}>${esc(x.g.name)}</option>`).join("");
+}
+function renderAccountForm(id,note){
+  SV={n:"form"};
+  const a=id?ACC.find(x=>x.id===id):null;
+  if(id&&!a){renderAccounts();return}
+  const self=a&&a.id===ME.id,editing=!!a;
+  if(editing&&!canManage(a)&&!self){renderAccounts();return}
+  const canGrade=!self||ME.admin,canAdminFlag=ME.admin;
+  sheet(shead(editing?"✏️ Modifier le compte « "+esc(a.id)+" »":"➕ Nouveau compte","accounts")+`
+   <div class="frm" style="max-width:460px">
+     ${editing?"":`<div><label for="ai">Identifiant de connexion (3 à 30 caractères : a-z, 0-9, . _ -)</label><input id="ai" type="text" autocapitalize="none" spellcheck="false"></div>`}
+     <div><label for="an">Nom affiché</label><input id="an" type="text" value="${editing?esc(a.nom||""):""}" placeholder="Ex. Lt Martin"></div>
+     <div><label for="ag">Grade</label><select id="ag" ${canGrade?"":"disabled"}>${gradeOptions(editing?a.grade:"",a)}</select></div>
+     ${canAdminFlag?`<label class="chk"><input type="checkbox" id="aadm" ${editing&&a.admin?"checked":""}> Compte administrateur (tous les droits)</label>`:""}
+     ${editing&&!self?`<label class="chk"><input type="checkbox" id="aact" ${a.active!==false?"checked":""}> Compte actif (décochez pour bloquer la connexion)</label>`:""}
+     <div><label for="apw">${editing?"Nouveau mot de passe (laisser vide pour ne pas changer)":"Mot de passe provisoire (8 caractères minimum)"}</label>
+       <div class="btns" style="flex-wrap:nowrap"><input id="apw" type="text" autocomplete="off" style="font-family:monospace"><button class="sec" type="button" data-act="genpw" title="Générer">🎲</button></div></div>
+     <label class="chk"><input type="checkbox" id="amust" ${editing?"":"checked"}> L'utilisateur doit changer son mot de passe à sa prochaine connexion</label>
+     <div class="err" id="aerr">${esc(note||"")}</div>
+     <div class="btns"><button data-act="saveacc" data-id="${editing?esc(a.id):""}">${editing?"Enregistrer":"Créer le compte"}</button>
+       ${editing?`<button class="sec" data-act="permacc" data-id="${esc(a.id)}">🔐 Permissions individuelles</button>`:""}
+       ${editing&&!self?`<button class="danger" data-act="delacc" data-id="${esc(a.id)}">🗑 Supprimer</button>`:""}</div>
+   </div>`);
+}
+async function saveAccount(id){
+  const er=$("#aerr");er.textContent="";er.className="err";
+  const a=id?ACC.find(x=>x.id===id):null;
+  const nom=$("#an").value.trim(),pw=$("#apw").value,must=$("#amust").checked;
+  const gradeSel=$("#ag").value;
+  const admEl=$("#aadm"),actEl=$("#aact");
+  if(!nom){er.textContent="Indiquez le nom affiché.";return}
+  if(!ME.admin&&gi(gradeSel)<=gi(ME.grade)&&!(a&&a.grade===gradeSel)){er.textContent="Vous ne pouvez pas attribuer un grade égal ou supérieur au vôtre.";return}
+  try{
+    if(!a){
+      const u=$("#ai").value.trim().toLowerCase();
+      if(!UREG.test(u)){er.textContent="Identifiant invalide (3 à 30 caractères : a-z, 0-9, . _ -).";return}
+      if(ACC.some(x=>x.id===u)){er.textContent="Cet identifiant existe déjà.";return}
+      if(pw.length<8){er.textContent="Mot de passe provisoire : 8 caractères minimum (utilisez 🎲).";return}
+      const salt=newSalt(),hash=await hashPw(pw,salt,ITER);
+      await S.set("accounts/"+u,{nom,grade:gradeSel,admin:!!(admEl&&admEl.checked),perms:{},active:true,must,salt,iter:ITER,hash,created:Date.now(),createdBy:ME.id});
+      // relecture : on n'annonce le succès que si le compte est réellement dans la base et que le mot de passe fonctionne
+      const chk=await tmo(S.get("accounts/"+u),12000,"Vérification du compte");
+      if(!chk||chk.hash!==hash||(await hashPw(pw,chk.salt,chk.iter))!==chk.hash)throw{message:"Le compte n'a pas été enregistré dans la base partagée"};
+      SV={n:"created"};
+      sheet(shead("✅ Compte créé","accounts")+`<p>Le compte <b>${esc(u)}</b> (${esc(nom)}) a été créé.</p><p class="note" style="margin:0 0 6px">Mot de passe provisoire à transmettre à la personne${must?" (elle devra le changer à sa première connexion)":""} :</p><div class="pw-show">${esc(pw)}</div><p class="note">Ce mot de passe ne sera plus affichable ensuite.</p><div class="btns" style="margin-top:12px"><button data-act="newacc">＋ Créer un autre compte</button><button class="sec" data-act="accounts">Retour à la liste</button></div>`);
+      return;
+    }
+    const upd={nom};
+    if(!a.admin||ME.admin)upd.grade=gradeSel;
+    if(admEl){
+      if(a.admin&&!admEl.checked&&adminCount()<=1){er.textContent="Impossible : il doit rester au moins un administrateur actif.";return}
+      upd.admin=admEl.checked;
+    }
+    if(actEl){
+      if(a.admin&&!actEl.checked&&adminCount()<=1){er.textContent="Impossible de désactiver le dernier administrateur.";return}
+      upd.active=actEl.checked;
+    }
+    if(pw){
+      if(pw.length<8){er.textContent="Mot de passe : 8 caractères minimum.";return}
+      upd.salt=newSalt();upd.iter=ITER;upd.hash=await hashPw(pw,upd.salt,ITER);upd.must=must;
+    }else if(must!==!!a.must)upd.must=must;
+    await S.update("accounts/"+a.id,upd);
+    if(upd.hash){const chk=await tmo(S.get("accounts/"+a.id),12000,"Vérification du compte");if(!chk||chk.hash!==upd.hash)throw{message:"Le nouveau mot de passe n'a pas été enregistré"}}
+    if(a.id===ME.id){ME=Object.assign(ME,upd);if(upd.hash)setSess({u:ME.id,h:ME.hash})}
+    toast("Compte mis à jour ✓"+(pw?" — nouveau mot de passe : "+pw:""));renderAccounts();
+  }catch(x){fail(x);er.textContent="Échec de l'enregistrement : "+((x&&x.message)||"erreur inconnue")}
+}
+function renderPermsOverride(id){
+  const a=ACC.find(x=>x.id===id);if(!a||!(canManage(a)||a.id===ME.id)){renderAccounts();return}
+  SV={n:"perms"};
+  const perms=permList(),groups=[...new Set(perms.map(p=>p.g))],g=gradeOf(a.grade);
+  sheet(shead("🔐 Permissions individuelles – "+esc(a.id),"editacc:"+id)+`
+   <p class="note" style="margin:0 0 6px">Par défaut, les droits viennent du grade (${gbadge(a.grade)}). Vous pouvez ici autoriser ou refuser une permission pour ce compte uniquement.${a.admin?" <b>Ce compte est administrateur : tous les droits lui sont accordés quelles que soient ces réglages.</b>":""}</p>
+   ${groups.map(gr=>`<div class="pcat">${esc(gr)}</div>${perms.filter(p=>p.g===gr).map(p=>{
+     const o=a.perms&&a.perms[p.k],inh=!!(g&&g.perms&&g.perms[p.k]);
+     const dis=!(ME.admin||can(p.k))||a.id===ME.id&&!ME.admin;
+     return`<div class="pline"><span>${esc(p.l)}</span><select data-pov="${esc(p.k)}" data-id="${esc(id)}" ${dis?"disabled":""}><option value="" ${o!==true&&o!==false?"selected":""}>Selon le grade (${inh?"oui":"non"})</option><option value="1" ${o===true?"selected":""}>✅ Autoriser</option><option value="0" ${o===false?"selected":""}>⛔ Refuser</option></select></div>`}).join("")}`).join("")}
+   <p class="note">Vous ne pouvez accorder que des permissions que vous possédez vous-même.</p>`);
+}
+function renderGrades(){
+  if(!can("grades"))return;SV={n:"grades"};
+  const adm=ME.admin,my=gi(ME.grade),edt=i=>adm||i>my;
+  const perms=permList(),groups=[...new Set(perms.map(p=>p.g))];
+  sheet(shead("🏅 Grades & permissions")+`
+   <p class="note" style="margin:0 0 8px">Cochez les permissions de chaque grade. L'ordre des colonnes = la hiérarchie (du plus haut au plus bas). Les administrateurs ont tous les droits. Les comptes peuvent aussi avoir des permissions individuelles qui priment sur leur grade.</p>
+   <div class="tw"><table class="mx"><thead><tr><th class="p">Permission</th>${GRADES.map((g,i)=>`<th style="min-width:118px"><input type="text" value="${esc(g.name)}" data-gn="${i}" ${edt(i)?"":"disabled"}>
+     <div class="btns" style="justify-content:center;margin-top:4px;gap:3px"><select data-gc="${i}" ${edt(i)?"":"disabled"}>${PALETTE.map(c=>`<option value="${c[0]}" ${c[0]===g.color?"selected":""}>${c[1]}</option>`).join("")}</select>
+     ${adm?`<button class="sec small" data-act="gmv" data-i="${i}" data-d="-1" ${i===0?"disabled":""}>◀</button><button class="sec small" data-act="gmv" data-i="${i}" data-d="1" ${i===GRADES.length-1?"disabled":""}>▶</button>`:""}
+     ${edt(i)?`<button class="danger small" data-act="gdel" data-i="${i}">✕</button>`:""}</div></th>`).join("")}</tr></thead><tbody>
+   ${groups.map(gr=>`<tr class="grp"><td colspan="${GRADES.length+1}">${esc(gr)}</td></tr>`+perms.filter(p=>p.g===gr).map(p=>`<tr><td class="p">${esc(p.l)}</td>${GRADES.map((g,i)=>`<td><input type="checkbox" data-gi="${i}" data-gk="${esc(p.k)}" ${g.perms&&g.perms[p.k]?"checked":""} ${edt(i)&&(adm||can(p.k))?"":"disabled"}></td>`).join("")}</tr>`).join("")).join("")}
+   </tbody></table></div>
+   <div class="btns" style="margin-top:12px"><button data-act="gadd">＋ Ajouter un grade</button>${adm?'<button class="danger" data-act="greset">Restaurer les grades par défaut</button>':""}</div>
+   <p class="note">Vous ne pouvez modifier que les grades situés sous le vôtre${adm?" (administrateur : tous)":""}, et n'accorder que des permissions que vous possédez.</p>`);
+}
+function saveGrades(now){
+  clearTimeout(gTimer);
+  const go=()=>{gTimer=null;enqueue("config/grades",()=>S.set("config/grades",{list:clone(GRADES),v:GVER})).catch(fail)};
+  if(now){gTimer=null;go()}else gTimer=setTimeout(go,500);
+  gTimer=gTimer||null;
+}
+
+/* ---------- événements de la fenêtre (délégation) ---------- */
+$("#sbox").addEventListener("click",async e=>{
+  const t=e.target.closest("[data-act],[data-addc],[data-delc],#setReset");if(!t)return;
+  const cfg=DB.cfg;
+  if(t.id==="setReset"){askConfirm("Restaurer les critères, coefficients et seuils par défaut ?",()=>{DB.cfg=DEF();saveCfgNow();renderSettings();renderAll()},"Restaurer");return}
+  if(t.dataset.addc!=null){const ep=cfg.ep[+t.dataset.addc];ep.crit.push({id:ep.id+"_"+Date.now().toString(36),n:"Nouveau critère",d:"",w:1});saveCfg();renderSettings();renderAll();return}
+  if(t.dataset.delc!=null){const[i,j]=t.dataset.delc.split(".").map(Number);if(cfg.ep[i].crit.length<=1){toast("Une épreuve doit garder au moins un critère");return}cfg.ep[i].crit.splice(j,1);saveCfg();renderSettings();renderAll();return}
+  const act=t.dataset.act,id=t.dataset.id;
+  if(act==="accounts")renderAccounts();
+  else if(act==="newacc")renderAccountForm(null);
+  else if(act==="editacc")renderAccountForm(id);
+  else if(act&&act.indexOf("editacc:")===0)renderAccountForm(act.slice(8));
+  else if(act==="genpw"){$("#apw").value=genPw()}
+  else if(act==="saveacc")saveAccount(id);
+  else if(act==="permacc")renderPermsOverride(id);
+  else if(act==="delacc"){
+    const a=ACC.find(x=>x.id===id);if(!a||!canManage(a)||a.id===ME.id)return;
+    if(a.admin&&adminCount()<=1){toast("Impossible de supprimer le dernier administrateur");return}
+    askConfirm("Supprimer définitivement le compte « "+a.id+" » ?",()=>{S.del("accounts/"+a.id).then(()=>{toast("Compte supprimé");renderAccounts()}).catch(fail)});
+  }
+  else if(act==="mypw"){
+    const er=$("#mperr");er.textContent="";
+    const p0=$("#mp0").value,p1=$("#mp1").value;
+    if(p1.length<8){er.textContent="Le nouveau mot de passe doit contenir au moins 8 caractères.";return}
+    if(p1!==$("#mp2").value){er.textContent="Les deux mots de passe ne correspondent pas.";return}
+    try{
+      if((await hashPw(p0,ME.salt,ME.iter))!==ME.hash){er.textContent="Mot de passe actuel incorrect.";return}
+      await setPassword(ME.id,p1,false);toast("Mot de passe modifié ✓");renderMyAccount();
+    }catch(x){fail(x);er.textContent="Échec de l'enregistrement."}
+  }
+  else if(act==="gmv"){
+    const i=+t.dataset.i,d=+t.dataset.d,j=i+d;if(j<0||j>=GRADES.length)return;
+    [GRADES[i],GRADES[j]]=[GRADES[j],GRADES[i]];saveGrades(true);renderGrades();applyPerms();
+  }
+  else if(act==="gdel"){
+    const i=+t.dataset.i,g=GRADES[i];
+    if(ACC.some(a=>a.grade===g.id)){toast("Ce grade est attribué à des comptes : changez d'abord leur grade");return}
+    if(GRADES.length<=1){toast("Il faut garder au moins un grade");return}
+    askConfirm("Supprimer le grade « "+g.name+" » ?",()=>{GRADES.splice(i,1);saveGrades(true);renderGrades()});
+  }
+  else if(act==="gadd"){GRADES.push({id:"g"+Date.now().toString(36),name:"Nouveau grade",color:GREY,perms:{cand_voir:true}});saveGrades(true);renderGrades()}
+  else if(act==="greset"){askConfirm("Restaurer les six grades par défaut ? Les comptes dont le grade n'existe plus seront « sans grade ».",()=>{GRADES=DEFGRADES();saveGrades(true);renderGrades();applyPerms()},"Restaurer")}
+});
+$("#sbox").addEventListener("input",e=>{
+  const t=e.target,cfg=DB.cfg;
+  if(t.dataset.sk&&can("config")){cfg[t.dataset.sk]=Math.max(0,Math.min(20,parseFloat(t.value)||0));saveCfg();renderAll()}
+  else if(t.dataset.ep!=null&&can("config")){const ep=cfg.ep[+t.dataset.ep];if(!ep)return;const f=t.dataset.f;ep[f]=f==="coef"?Math.max(0,parseFloat(t.value)||0):t.value;saveCfg();renderAll()}
+  else if(t.dataset.cr&&can("config")){const[i,j]=t.dataset.cr.split(".").map(Number),c=cfg.ep[i]&&cfg.ep[i].crit[j];if(!c)return;const f=t.dataset.f;c[f]=f==="w"?Math.max(0,parseFloat(t.value)||0):t.value;saveCfg();renderAll()}
+  else if(t.dataset.gn!=null){const g=GRADES[+t.dataset.gn];if(!g)return;g.name=t.value;saveGrades(false);renderUserbar()}
+});
+$("#sbox").addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.gc!=null){const g=GRADES[+t.dataset.gc];if(g){g.color=t.value;saveGrades(true);renderUserbar()}}
+  else if(t.dataset.gi!=null){
+    const g=GRADES[+t.dataset.gi];if(!g)return;g.perms=g.perms||{};
+    if(t.checked)g.perms[t.dataset.gk]=true;else delete g.perms[t.dataset.gk];
+    saveGrades(true);applyPerms();
+  }
+  else if(t.dataset.pov){
+    const a=ACC.find(x=>x.id===t.dataset.id);if(!a)return;
+    const v=t.value===""?null:t.value==="1";
+    S.update("accounts/"+a.id,{perms:{[t.dataset.pov]:v}}).then(()=>toast("Permission mise à jour ✓")).catch(fail);
+    a.perms=Object.assign({},a.perms,{[t.dataset.pov]:v});
+  }
+});
+
+/* =====================================================================
+   DÉMARRAGE
+   ===================================================================== */
+async function boot(forceLocal){
+  try{
+    gate('<div class="gload">Chargement…</div>');
+    if(!forceLocal)await initPlatform();
+    if(!window.crypto||!crypto.subtle){viewError("Ce navigateur ou ce contexte ne permet pas le chiffrement des mots de passe (HTTPS requis).");return}
+    if(ONPLATFORM&&!DBAPI){viewError("La base de données partagée n'est pas disponible dans cette vue. Ouvrez la page depuis son lien claude.ai, en étant connecté à votre compte Claude, avec au moins le niveau « Contributeur ».",errTxt(BOOTERR));return}
+    S=DBAPI?Cloud:Local;
+    const se=getSess();
+    if(se&&UREG.test(se.u||"")){
+      status("Reconnexion…");
+      let a=null;try{a=await tmo(S.get("accounts/"+se.u),15000,"Lecture du compte")}catch(e){console.error(e)}
+      if(a&&a.active!==false&&a.hash===se.h){await startSession(Object.assign({id:se.u},a));return}
+      setSess(null);
+    }
+    viewLogin(""); // En mode GitHub Pages, les comptes sont stockés localement dans ce navigateur.
+  }catch(e){console.error(e);viewError("Une erreur est survenue au démarrage.",errTxt(e))}
+}
+window.addEventListener("unhandledrejection",e=>{if(document.querySelector("#gate .gload"))viewError("Une erreur est survenue au démarrage.",errTxt(e.reason))});
+window.addEventListener("error",e=>{if(document.querySelector("#gate .gload"))viewError("Une erreur est survenue au démarrage.",e.message)});
+boot();
+</script>
+</body>
+</html>
